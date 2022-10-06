@@ -9,9 +9,9 @@ namespace MaterialSkin.Controls
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
 
-    #if NETFRAMEWORK
+#if NETFRAMEWORK
     using System.Runtime.Remoting.Channels;
-    #endif
+#endif
 
     public class MaterialForm : Form, IMaterialControl
     {
@@ -39,6 +39,27 @@ namespace MaterialSkin.Controls
                 _formStyle = value;
                 RecalculateFormBoundaries();
             }
+        }
+
+        [Category("Material Skin"), Browsable(true), DisplayName("Close button icon"), Description("Sets the replacement of the close button in the form")]
+        public Image XButtonIcon
+        {
+            get => xButtonIcon;
+            set => xButtonIcon = value;
+        }
+
+        [Category("Material Skin"), Browsable(true), DisplayName("Minimize button icon"), Description("Sets the replacement of the minimaze button in the form")]
+        public Image MinButtonIcon
+        {
+            get => minButtonIcon;
+            set => minButtonIcon = value;
+        }
+
+        [Category("Material Skin"), Browsable(true), DisplayName("Maximize button icon"), Description("Sets the replacement of the maximize button in the form")]
+        public Image MaxButtonIcon
+        {
+            get => maxButtonIcon;
+            set => maxButtonIcon = value;
         }
 
         [Category("Drawer")]
@@ -184,6 +205,7 @@ namespace MaterialSkin.Controls
         {
             StatusAndActionBar_None,
             ActionBar_None,
+            ActionBar_30,
             ActionBar_40,
             ActionBar_48,
             ActionBar_56,
@@ -410,6 +432,9 @@ namespace MaterialSkin.Controls
 
         private int STATUS_BAR_HEIGHT = 24;
         private int ACTION_BAR_HEIGHT = 40;
+        private Image xButtonIcon;
+        private Image minButtonIcon;
+        private Image maxButtonIcon;
         #endregion
 
         public MaterialForm()
@@ -429,7 +454,7 @@ namespace MaterialSkin.Controls
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
             FormStyle = FormStyles.ActionBar_40;
 
-            Padding = new Padding(PADDING_MINIMUM, STATUS_BAR_HEIGHT+ ACTION_BAR_HEIGHT, PADDING_MINIMUM, PADDING_MINIMUM);      //Keep space for resize by mouse
+            Padding = new Padding(PADDING_MINIMUM, STATUS_BAR_HEIGHT + ACTION_BAR_HEIGHT, PADDING_MINIMUM, PADDING_MINIMUM);      //Keep space for resize by mouse
 
             _clickAnimManager = new AnimationManager()
             {
@@ -745,6 +770,10 @@ namespace MaterialSkin.Controls
                     ACTION_BAR_HEIGHT = 0;
                     STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
                     break;
+                case FormStyles.ActionBar_30:
+                    ACTION_BAR_HEIGHT = 30;
+                    STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
+                    break;
                 case FormStyles.ActionBar_40:
                     ACTION_BAR_HEIGHT = ACTION_BAR_HEIGHT_DEFAULT;
                     STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
@@ -837,7 +866,7 @@ namespace MaterialSkin.Controls
             }
             // Double click to maximize
             else if (message == WM.LeftButtonDoubleClick && isOverCaption)
-            { 
+            {
                 Maximized = !Maximized;
             }
             // Treat the Caption as if it was Non-Client
@@ -861,7 +890,7 @@ namespace MaterialSkin.Controls
 
                     // Pass the command as a WM_SYSCOMMAND message
                     SendMessage(Handle, (int)WM.SystemCommand, id, 0);
-                    
+
                     // restore user defined ContextMenuStrip
                     base.ContextMenuStrip = user_cms;
                 }
@@ -1039,83 +1068,116 @@ namespace MaterialSkin.Controls
                         int x = showMax ? _minButtonBounds.X : _maxButtonBounds.X;
                         int y = showMax ? _minButtonBounds.Y : _maxButtonBounds.Y;
 
-                        g.DrawLine(
-                            formButtonsPen,
-                            x + (int)(_minButtonBounds.Width * 0.33),
-                            y + (int)(_minButtonBounds.Height * 0.66),
-                            x + (int)(_minButtonBounds.Width * 0.66),
-                            y + (int)(_minButtonBounds.Height * 0.66)
-                       );
+                        if (MinButtonIcon == null)
+                        {
+                            g.DrawLine(
+                                formButtonsPen,
+                                x + (int)(_minButtonBounds.Width * 0.33),
+                                y + (int)(_minButtonBounds.Height * 0.66),
+                                x + (int)(_minButtonBounds.Width * 0.66),
+                                y + (int)(_minButtonBounds.Height * 0.66)
+                           );
+                        }
+                        else
+                        {
+                            g.DrawImage(MinButtonIcon,
+                                x + ((_minButtonBounds.Width - (_minButtonBounds.Width * 0.8f)) / 2),
+                                y + ((_minButtonBounds.Height - (_minButtonBounds.Height * 0.8f)) / 2),
+                                _minButtonBounds.Width * 0.8f,
+                                _minButtonBounds.Height * 0.8f);
+                        }
                     }
 
                     // Maximize button
                     if (showMax)
                     {
-                        if (WindowState != FormWindowState.Maximized)
+                        if (MaxButtonIcon != null)
                         {
-                            g.DrawRectangle(
-                                formButtonsPen,
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.33),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.36),
-                                (int)(_maxButtonBounds.Width * 0.39),
-                                (int)(_maxButtonBounds.Height * 0.31)
-                            );
+                            g.DrawImage(MaxButtonIcon,
+                                _maxButtonBounds.X + ((_maxButtonBounds.Width - (_maxButtonBounds.Width * 0.8f)) / 2),
+                                _maxButtonBounds.Y + ((_maxButtonBounds.Height - (_maxButtonBounds.Height * 0.8f)) / 2),
+                                _maxButtonBounds.Width * 0.8f,
+                                _maxButtonBounds.Height * 0.8f);
                         }
                         else
                         {
-                            // Change position of square
-                            g.DrawRectangle(
-                                formButtonsPen,
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.30),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.42),
-                                (int)(_maxButtonBounds.Width * 0.40),
-                                (int)(_maxButtonBounds.Height * 0.32)
-                            );
-                            // Draw lines for background square
-                            g.DrawLine(formButtonsPen,
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.42),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.30),
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.42),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.38)
-                            );
-                            g.DrawLine(formButtonsPen,
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.40),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.30),
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.86),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Width * 0.30)
-                            );
-                            g.DrawLine(formButtonsPen,
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.82),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.28),
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.82),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Width * 0.64)
-                            );
-                            g.DrawLine(formButtonsPen,
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.70),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.62),
-                                _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.84),
-                                _maxButtonBounds.Y + (int)(_maxButtonBounds.Width * 0.62)
-                            );
+                            if (WindowState != FormWindowState.Maximized)
+                            {
+                                g.DrawRectangle(
+                                    formButtonsPen,
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.33),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.36),
+                                    (int)(_maxButtonBounds.Width * 0.39),
+                                    (int)(_maxButtonBounds.Height * 0.31)
+                                );
+                            }
+                            else
+                            {
+                                // Change position of square
+                                g.DrawRectangle(
+                                    formButtonsPen,
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.30),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.42),
+                                    (int)(_maxButtonBounds.Width * 0.40),
+                                    (int)(_maxButtonBounds.Height * 0.32)
+                                );
+                                // Draw lines for background square
+                                g.DrawLine(formButtonsPen,
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.42),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.30),
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.42),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.38)
+                                );
+                                g.DrawLine(formButtonsPen,
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.40),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.30),
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.86),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Width * 0.30)
+                                );
+                                g.DrawLine(formButtonsPen,
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.82),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.28),
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.82),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Width * 0.64)
+                                );
+                                g.DrawLine(formButtonsPen,
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.70),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Height * 0.62),
+                                    _maxButtonBounds.X + (int)(_maxButtonBounds.Width * 0.84),
+                                    _maxButtonBounds.Y + (int)(_maxButtonBounds.Width * 0.62)
+                                );
+                            }
                         }
                     }
 
                     // Close button
                     if (ControlBox)
                     {
-                        g.DrawLine(
-                            formButtonsPen,
-                            _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.33),
-                            _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.33),
-                            _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.66),
-                            _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.66)
-                       );
+                        if (XButtonIcon == null)
+                        {
+                            g.DrawLine(
+                                formButtonsPen,
+                                _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.33),
+                                _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.33),
+                                _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.66),
+                                _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.66)
+                           );
 
-                        g.DrawLine(
-                            formButtonsPen,
-                            _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.66),
-                            _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.33),
-                            _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.33),
-                            _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.66));
+                            g.DrawLine(
+                                formButtonsPen,
+                                _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.66),
+                                _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.33),
+                                _xButtonBounds.X + (int)(_xButtonBounds.Width * 0.33),
+                                _xButtonBounds.Y + (int)(_xButtonBounds.Height * 0.66));
+                        }
+                        else
+                        {
+                            g.DrawImage(XButtonIcon,
+                                _xButtonBounds.X + ((_xButtonBounds.Width - (_xButtonBounds.Width * 0.8f)) / 2),
+                                _xButtonBounds.Y + ((_xButtonBounds.Height - (_xButtonBounds.Height * 0.8f)) / 2),
+                                _xButtonBounds.Width * 0.8f,
+                                _xButtonBounds.Height * 0.8f);
+                        }
                     }
                 }
             }
@@ -1124,10 +1186,20 @@ namespace MaterialSkin.Controls
             if (DrawerTabControl != null && _formStyle != FormStyles.ActionBar_None && _formStyle != FormStyles.StatusAndActionBar_None)
             {
                 if (_buttonState == ButtonState.DrawerOver)
-                    g.FillRectangle(hoverBrush, _drawerButtonBounds);
+                {
+                    if (ACTION_BAR_HEIGHT < ACTION_BAR_HEIGHT_DEFAULT)
+                        g.FillRectangle(hoverBrush, new Rectangle(ClientRectangle.X + (SkinManager.FORM_PADDING / 2) + 7, STATUS_BAR_HEIGHT, ACTION_BAR_HEIGHT, ACTION_BAR_HEIGHT));
+                    else
+                        g.FillRectangle(hoverBrush, _drawerButtonBounds);
+                }
 
                 if (_buttonState == ButtonState.DrawerDown)
-                    g.FillRectangle(downBrush, _drawerButtonBounds);
+                {
+                    if (ACTION_BAR_HEIGHT < ACTION_BAR_HEIGHT_DEFAULT)
+                        g.FillRectangle(hoverBrush, new Rectangle(ClientRectangle.X + (SkinManager.FORM_PADDING / 2) + 7, STATUS_BAR_HEIGHT, ACTION_BAR_HEIGHT, ACTION_BAR_HEIGHT));
+                    else
+                        g.FillRectangle(hoverBrush, _drawerButtonBounds);
+                }
 
                 _drawerIconRect = new Rectangle(SkinManager.FORM_PADDING / 2, STATUS_BAR_HEIGHT, ACTION_BAR_HEIGHT_DEFAULT, ACTION_BAR_HEIGHT);
                 // Ripple
@@ -1177,7 +1249,7 @@ namespace MaterialSkin.Controls
                 //Form title
                 using (NativeTextRenderer NativeText = new NativeTextRenderer(g))
                 {
-                    Rectangle textLocation = new Rectangle(DrawerTabControl != null ? TITLE_LEFT_PADDING : TITLE_LEFT_PADDING - (ICON_SIZE + (ACTION_BAR_PADDING*2)), STATUS_BAR_HEIGHT, ClientSize.Width, ACTION_BAR_HEIGHT);
+                    Rectangle textLocation = new Rectangle(DrawerTabControl != null ? TITLE_LEFT_PADDING : TITLE_LEFT_PADDING - (ICON_SIZE + (ACTION_BAR_PADDING * 2)), STATUS_BAR_HEIGHT, ClientSize.Width, ACTION_BAR_HEIGHT);
                     NativeText.DrawTransparentText(Text, SkinManager.getLogFontByType(MaterialSkinManager.fontType.H6),
                         SkinManager.ColorScheme.TextColor,
                         textLocation.Location,
@@ -1239,6 +1311,17 @@ namespace MaterialSkin.Controls
         [DllImport("user32.dll")]
         private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
         #endregion
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // MaterialForm
+            // 
+            this.ClientSize = new System.Drawing.Size(282, 253);
+            this.Name = "MaterialForm";
+            this.ResumeLayout(false);
+        }
     }
 
     public class MaterialDrawerForm : Form
