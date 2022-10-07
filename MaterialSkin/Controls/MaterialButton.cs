@@ -73,7 +73,7 @@
         [Category("Material Skin")]
         public bool UseAccentColor
         {
-            get { return useAccentColor; }
+            get => useAccentColor;
             set { useAccentColor = value; Invalidate(); }
         }
 
@@ -83,7 +83,7 @@
         /// </summary>
         public bool HighEmphasis
         {
-            get { return highEmphasis; }
+            get => highEmphasis;
             set { highEmphasis = value; Invalidate(); }
         }
 
@@ -92,21 +92,22 @@
         [Description("Draw Shadows around control")]
         public bool DrawShadows
         {
-            get { return drawShadows; }
+            get => drawShadows;
             set { drawShadows = value; Invalidate(); }
         }
 
         [Category("Material Skin")]
+        [Description("Sets the type of the button")]
         public MaterialButtonType Type
         {
-            get { return type; }
+            get => type;
             set { type = value; preProcessIcons(); Invalidate(); }
         }
 
         [Category("Material Skin"), DefaultValue(MaterialButtonColorType.Primary), Description("Sets button color, works only when UseAccentColor is false")]
         public MaterialButtonColorType ColorType
         {
-            get { return colorType; }
+            get => colorType;
             set { colorType = value; preProcessIcons(); Invalidate(); }
         }
 
@@ -116,7 +117,7 @@
         /// </summary>
         public MaterialButtonDensity Density
         {
-            get { return _density; }
+            get => _density;
             set
             {
                 _density = value;
@@ -226,7 +227,7 @@
         /// </summary>
         public Image Icon
         {
-            get { return _icon; }
+            get => _icon;
             set
             {
                 _icon = value;
@@ -244,7 +245,7 @@
         [Category("Material Skin"), DefaultValue(4), Description("Sets the border radius in px")]
         public int Radius
         {
-            get { return radius; }
+            get => radius;
             set
             {
                 if (value <= 0)
@@ -321,11 +322,11 @@
         /// </summary>
         public override string Text
         {
-            get { return base.Text; }
+            get => base.Text;
             set
             {
                 base.Text = value;
-                if (!String.IsNullOrEmpty(value))
+                if (!string.IsNullOrEmpty(value))
                     _textSize = CreateGraphics().MeasureString(value.ToUpper(), SkinManager.getFontByType(MaterialSkinManager.fontType.Button));
                 else
                 {
@@ -434,12 +435,13 @@
             }
 
             // added processed image to brush for drawing
-            TextureBrush textureBrushGray = new TextureBrush(bgray);
-
-            textureBrushGray.WrapMode = System.Drawing.Drawing2D.WrapMode.Clamp;
+            TextureBrush textureBrushGray = new TextureBrush(bgray)
+            {
+                WrapMode = System.Drawing.Drawing2D.WrapMode.Clamp
+            };
 
             // Translate the brushes to the correct positions
-            var iconRect = new Rectangle(8, (Height / 2 - ICON_SIZE / 2), ICON_SIZE, ICON_SIZE);
+            Rectangle iconRect = new Rectangle(8, (Height / 2 - ICON_SIZE / 2), ICON_SIZE, ICON_SIZE);
 
             textureBrushGray.TranslateTransform(iconRect.X + iconRect.Width / 2 - IconResized.Width / 2,
                                                 iconRect.Y + iconRect.Height / 2 - IconResized.Height / 2);
@@ -453,7 +455,7 @@
         /// <param name="pevent">The pevent<see cref="PaintEventArgs"/></param>
         protected override void OnPaint(PaintEventArgs pevent)
         {
-            var g = pevent.Graphics;
+            Graphics g = pevent.Graphics;
 
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -486,7 +488,7 @@
                 // High emphasis
                 else if (HighEmphasis)
                 {
-                    var usedBrush = SkinManager.ColorScheme.AccentBrush;
+                    Brush usedBrush = SkinManager.ColorScheme.AccentBrush;
 
                     if (!UseAccentColor)
                     {
@@ -536,7 +538,7 @@
             }
 
             #region get hover/focus color
-            var hoverFocusColor = Color.Transparent;
+            Color hoverFocusColor = Color.Transparent;
             if (UseAccentColor)
             {
                 if (HighEmphasis && Type == MaterialButtonType.Contained)
@@ -589,7 +591,7 @@
 
             if (Type == MaterialButtonType.Outlined)
             {
-                var outColor = SkinManager.DividersColor;
+                Color outColor = SkinManager.DividersColor;
                 if (Enabled)
                 {
                     if (UseAccentColor)
@@ -616,10 +618,10 @@
             {
                 //g.Clip = new Region(buttonRectF);
                 g.Clip = new Region(buttonPath);
-                for (var i = 0; i < _animationManager.GetAnimationCount(); i++)
+                for (int i = 0; i < _animationManager.GetAnimationCount(); i++)
                 {
-                    var animationValue = _animationManager.GetProgress(i);
-                    var animationSource = _animationManager.GetSource(i);
+                    double animationValue = _animationManager.GetProgress(i);
+                    Point animationSource = _animationManager.GetSource(i);
 
                     Color rippleColor;
                     if (Type == MaterialButtonType.Contained && HighEmphasis)
@@ -658,7 +660,7 @@
                     using (Brush rippleBrush = new SolidBrush(Color.FromArgb((int)(100 - (animationValue * 100)), // Alpha animation
                                                               rippleColor))) // Normal
                     {
-                        var rippleSize = (int)(animationValue * Width * 2);
+                        int rippleSize = (int)(animationValue * Width * 2);
                         g.FillEllipse(rippleBrush, new Rectangle(animationSource.X - rippleSize / 2, animationSource.Y - rippleSize / 2, rippleSize, rippleSize));
                     }
                 }
@@ -666,7 +668,7 @@
             }
 
             //Text
-            var textRect = ClientRectangle;
+            Rectangle textRect = ClientRectangle;
             if (Icon != null)
             {
                 textRect.Width -= 8 + ICON_SIZE + 4 + 8; // left padding + icon width + space between Icon and Text + right padding
@@ -734,7 +736,7 @@
             }
 
             //Icon
-            var iconRect = new Rectangle(8, (Height / 2) - (ICON_SIZE / 2), ICON_SIZE, ICON_SIZE);
+            Rectangle iconRect = new Rectangle(8, (Height / 2) - (ICON_SIZE / 2), ICON_SIZE, ICON_SIZE);
 
             if (string.IsNullOrEmpty(Text))
             {
@@ -790,7 +792,7 @@
             Size s = base.GetPreferredSize(proposedSize);
 
             // Provides extra space for proper padding for content
-            var extra = 16;
+            int extra = 16;
 
             if (Icon != null)
             {
