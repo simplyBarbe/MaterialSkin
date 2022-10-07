@@ -512,7 +512,20 @@
 
             if (Type == MaterialButtonType.Outlined)
             {
-                using (Pen outlinePen = new Pen(Enabled ? SkinManager.DividersAlternativeColor : SkinManager.DividersColor, 1))
+                var outColor = SkinManager.DividersColor;
+
+                if (Enabled)
+                {
+                    if (highEmphasis)
+                        outColor = SkinManager.ColorScheme.PrimaryColor;
+                    if (UseAccentColor)
+                        outColor = SkinManager.ColorScheme.AccentColor;
+
+                    if (outColor == SkinManager.DividersColor)
+                        outColor = SkinManager.DividersAlternativeColor;
+                }
+
+                using (Pen outlinePen = new Pen(outColor, 1))
                 {
                     buttonRectF.X += 0.5f;
                     buttonRectF.Y += 0.5f;
