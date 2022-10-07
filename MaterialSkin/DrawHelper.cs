@@ -78,10 +78,11 @@
             return BlendColor(backgroundColor, frontColor, frontColor.A);
         }
 
-        public static void DrawSquareShadow(Graphics g, Rectangle bounds)
+        public static void DrawSquareShadow(Graphics g, Rectangle bounds, int radius = 4)
         {
             using (SolidBrush shadowBrush = new SolidBrush(Color.FromArgb(12, 0, 0, 0)))
             {
+                /*
                 GraphicsPath path;
                 path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 3.5f, bounds.Y - 1.5f, bounds.Width + 6, bounds.Height + 6), 8);
                 g.FillPath(shadowBrush, path);
@@ -92,6 +93,20 @@
                 path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 0.5f, bounds.Y + 1.5f, bounds.Width + 0, bounds.Height + 0), 4);
                 g.FillPath(shadowBrush, path);
                 path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 0.5f, bounds.Y + 2.5f, bounds.Width + 0, bounds.Height + 0), 4);
+                g.FillPath(shadowBrush, path);
+                path.Dispose();
+                */
+
+                GraphicsPath path;
+                path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 3.5f, bounds.Y - 1.5f, bounds.Width + 6, bounds.Height + 6), radius * 1.5f);
+                g.FillPath(shadowBrush, path);
+                path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 2.5f, bounds.Y - 1.5f, bounds.Width + 4, bounds.Height + 4), radius * 1.25f);
+                g.FillPath(shadowBrush, path);
+                path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 1.5f, bounds.Y - 0.5f, bounds.Width + 2, bounds.Height + 2), radius);
+                g.FillPath(shadowBrush, path);
+                path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 0.5f, bounds.Y + 1.5f, bounds.Width + 0, bounds.Height + 0), radius);
+                g.FillPath(shadowBrush, path);
+                path = DrawHelper.CreateRoundRect(new RectangleF(bounds.X - 0.5f, bounds.Y + 2.5f, bounds.Width + 0, bounds.Height + 0), radius);
                 g.FillPath(shadowBrush, path);
                 path.Dispose();
             }

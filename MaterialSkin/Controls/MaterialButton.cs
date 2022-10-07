@@ -24,7 +24,7 @@
 
         // icons
         private TextureBrush iconsBrushes;
-        
+
         /// <summary>
         /// Gets or sets the Depth
         /// </summary>
@@ -99,10 +99,10 @@
         public MaterialButtonDensity Density
         {
             get { return _density; }
-            set 
-            { 
+            set
+            {
                 _density = value;
-                if (_density== MaterialButtonDensity.Dense)
+                if (_density == MaterialButtonDensity.Dense)
                     Size = new Size(Size.Width, HEIGHTDENSE);
                 else
                     Size = new Size(Size.Width, HEIGHTDEFAULT);
@@ -199,6 +199,7 @@
         private bool useAccentColor;
         private MaterialButtonType type;
         private MaterialButtonDensity _density;
+        private int radius;
 
         [Category("Material Skin")]
         /// <summary>
@@ -216,6 +217,24 @@
                 {
                     Refresh();
                 }
+
+                Invalidate();
+            }
+        }
+
+        [Category("Material Skin"), DefaultValue(4), Description("Sets the border radius in px")]
+        public int Radius
+        {
+            get { return radius; }
+            set
+            {
+                if (value <= 0)
+                    value = 4;
+
+                if ((Math.Min(Width, Height) / 2) < value)
+                    value = (Math.Min(Width, Height) / 2);
+
+                radius = value;
 
                 Invalidate();
             }
@@ -274,6 +293,7 @@
             AutoSize = true;
             Margin = new Padding(4, 6, 4, 6);
             Padding = new Padding(0);
+            Radius = radius <= 0 ? 4 : radius;
         }
 
         /// <summary>
@@ -316,7 +336,7 @@
             Graphics gp = e.Graphics;
             Rectangle rect = new Rectangle(Location, ClientRectangle.Size);
             gp.SmoothingMode = SmoothingMode.AntiAlias;
-            DrawHelper.DrawSquareShadow(gp, rect);
+            DrawHelper.DrawSquareShadow(gp, rect,Radius);
         }
 
         private void preProcessIcons()
@@ -325,7 +345,7 @@
 
             int newWidth, newHeight;
             //Resize icon if greater than ICON_SIZE
-            if (Icon.Width> ICON_SIZE || Icon.Height > ICON_SIZE)
+            if (Icon.Width > ICON_SIZE || Icon.Height > ICON_SIZE)
             {
                 //calculate aspect ratio
                 float aspect = Icon.Width / (float)Icon.Height;
@@ -399,7 +419,7 @@
             textureBrushGray.WrapMode = System.Drawing.Drawing2D.WrapMode.Clamp;
 
             // Translate the brushes to the correct positions
-            var iconRect = new Rectangle(8, (Height/2 - ICON_SIZE / 2), ICON_SIZE, ICON_SIZE);
+            var iconRect = new Rectangle(8, (Height / 2 - ICON_SIZE / 2), ICON_SIZE, ICON_SIZE);
 
             textureBrushGray.TranslateTransform(iconRect.X + iconRect.Width / 2 - IconResized.Width / 2,
                                                 iconRect.Y + iconRect.Height / 2 - IconResized.Height / 2);
@@ -427,10 +447,10 @@
             RectangleF buttonRectF = new RectangleF(ClientRectangle.Location, ClientRectangle.Size);
             buttonRectF.X -= 0.5f;
             buttonRectF.Y -= 0.5f;
-            GraphicsPath buttonPath = DrawHelper.CreateRoundRect(buttonRectF, 4);
+            GraphicsPath buttonPath = DrawHelper.CreateRoundRect(buttonRectF, Radius);
 
             // button shadow (blend with form shadow)
-            DrawHelper.DrawSquareShadow(g, ClientRectangle);
+            DrawHelper.DrawSquareShadow(g, ClientRectangle, Radius);
 
             if (Type == MaterialButtonType.Contained)
             {
@@ -503,7 +523,8 @@
             //Ripple
             if (_animationManager.IsAnimating())
             {
-                g.Clip = new Region(buttonRectF);
+                //g.Clip = new Region(buttonRectF);
+                g.Clip = new Region(buttonPath);
                 for (var i = 0; i < _animationManager.GetAnimationCount(); i++)
                 {
                     var animationValue = _animationManager.GetProgress(i);
@@ -534,7 +555,7 @@
 
             Color textColor = Enabled ? (HighEmphasis ? (Type == MaterialButtonType.Text || Type == MaterialButtonType.Outlined) ?
                 UseAccentColor ? SkinManager.ColorScheme.AccentColor : // Outline or Text and accent and emphasis
-                NoAccentTextColor == Color.Empty ? 
+                NoAccentTextColor == Color.Empty ?
                 SkinManager.ColorScheme.PrimaryColor :  // Outline or Text and emphasis
                 NoAccentTextColor : // User defined Outline or Text and emphasis
                 SkinManager.ColorScheme.TextColor : // Contained and Emphasis
@@ -607,7 +628,7 @@
                 s.Width += extra;
                 s.Height = HEIGHTDEFAULT;
             }
-            if (Icon != null && Text.Length==0 && s.Width < MINIMUMWIDTHICONONLY) s.Width = MINIMUMWIDTHICONONLY;
+            if (Icon != null && Text.Length == 0 && s.Width < MINIMUMWIDTHICONONLY) s.Width = MINIMUMWIDTHICONONLY;
             else if (s.Width < MINIMUMWIDTH) s.Width = MINIMUMWIDTH;
 
             return s;
