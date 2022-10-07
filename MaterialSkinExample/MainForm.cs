@@ -24,7 +24,7 @@ namespace MaterialSkinExample
             // MaterialSkinManager properties
             materialSkinManager.AddFormToManage(this);
             materialSkinManager.Theme = MaterialSkinManager.Themes.LIGHT;
-            materialSkinManager.ColorScheme = new ColorScheme(Primary.Indigo500, Primary.Indigo700, Primary.Indigo100, Accent.Pink200, TextShade.WHITE);
+            materialSkinManager.ColorScheme = new ColorScheme(Primary.Indigo500, Primary.Indigo700, Primary.Indigo100, Accent.Pink200, TextShade.WHITE, Primary.Green700, Primary.Cyan700, Primary.Yellow700, Primary.Red700);
 
             // Add dummy data to the listview
             seedListView();
@@ -36,19 +36,19 @@ namespace MaterialSkinExample
             materialCheckedListBox1.Items.Add("Item6", false);
             materialCheckedListBox1.Items.Add("Item7", false);
 
-            materialComboBox6.SelectedIndex = 0;
+            //materialComboBox6.SelectedIndex = 0;
 
             materialListBoxFormStyle.Clear();
             foreach (var FormStyleItem in Enum.GetNames(typeof(MaterialForm.FormStyles)))
             {
                 materialListBoxFormStyle.AddItem(FormStyleItem);
-                if (FormStyleItem == this.FormStyle.ToString()) materialListBoxFormStyle.SelectedIndex = materialListBoxFormStyle.Items.Count-1;
+                if (FormStyleItem == this.FormStyle.ToString()) materialListBoxFormStyle.SelectedIndex = materialListBoxFormStyle.Items.Count - 1;
             }
 
             materialListBoxFormStyle.SelectedIndexChanged += (sender, args) =>
             {
                 MaterialForm.FormStyles SelectedStyle = (MaterialForm.FormStyles)Enum.Parse(typeof(MaterialForm.FormStyles), args.Text);
-                if (this.FormStyle!= SelectedStyle) this.FormStyle = SelectedStyle;
+                if (this.FormStyle != SelectedStyle) this.FormStyle = SelectedStyle;
             };
 
             materialMaskedTextBox1.ValidatingType = typeof(System.Int16);
@@ -101,8 +101,8 @@ namespace MaterialSkinExample
                         materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? Primary.Teal500 : Primary.Indigo500,
                         materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? Primary.Teal700 : Primary.Indigo700,
                         materialSkinManager.Theme == MaterialSkinManager.Themes.DARK ? Primary.Teal200 : Primary.Indigo100,
-                        Accent.Pink200,
-                        TextShade.WHITE);
+                        Accent.Pink200, TextShade.WHITE,
+                        Primary.Green700, Primary.Cyan700, Primary.Yellow700, Primary.Red700);
                     break;
 
                 case 1:
@@ -110,8 +110,8 @@ namespace MaterialSkinExample
                         Primary.Green600,
                         Primary.Green700,
                         Primary.Green200,
-                        Accent.Red100,
-                        TextShade.WHITE);
+                        Accent.Red100, TextShade.WHITE,
+                        Primary.Green700, Primary.Cyan700, Primary.Yellow700, Primary.Red700);
                     break;
 
                 case 2:
@@ -119,8 +119,8 @@ namespace MaterialSkinExample
                         Primary.BlueGrey800,
                         Primary.BlueGrey900,
                         Primary.BlueGrey500,
-                        Accent.LightBlue200,
-                        TextShade.WHITE);
+                        Accent.LightBlue200, TextShade.WHITE,
+                        Primary.Green700, Primary.Cyan700, Primary.Yellow700, Primary.Red700);
                     break;
             }
             Invalidate();
@@ -222,13 +222,13 @@ namespace MaterialSkinExample
         {
             if (materialComboBox7.SelectedIndex == 1)
             {
-                    materialTextBox21.PrefixSuffix = MaterialTextBox2.PrefixSuffixTypes.Prefix;
+                materialTextBox21.PrefixSuffix = MaterialTextBox2.PrefixSuffixTypes.Prefix;
             }
             else if (materialComboBox7.SelectedIndex == 2)
             {
                 materialTextBox21.PrefixSuffix = MaterialTextBox2.PrefixSuffixTypes.Suffix;
             }
-            else 
+            else
             {
                 materialTextBox21.PrefixSuffix = MaterialTextBox2.PrefixSuffixTypes.None;
             }
@@ -272,23 +272,20 @@ namespace MaterialSkinExample
         {
             materialCheckbox1.ReadOnly = msReadOnly.Checked;
         }
-        
+
         private void materialButton25_Click(object sender, EventArgs e)
         {
-            MaterialDialog materialDialog = new MaterialDialog(this,"Dialog Title", "Dialogs inform users about a task and can contain critical information, require decisions, or involve multiple tasks.", "OK", true, "Cancel");
+            MaterialDialog materialDialog = new MaterialDialog(this, "Dialog Title", "Dialogs inform users about a task and can contain critical information, require decisions, or involve multiple tasks.", "OK", true, "Cancel");
             DialogResult result = materialDialog.ShowDialog(this);
 
-            MaterialSnackBar SnackBarMessage = new MaterialSnackBar(result.ToString(),750);
+            MaterialSnackBar SnackBarMessage = new MaterialSnackBar(result.ToString(), 750);
             SnackBarMessage.Show(this);
 
         }
-        
+
         private void materialSwitch16_CheckedChanged(object sender, EventArgs e)
         {
             materialTextBox21.ShowAssistiveText = materialSwitch16.Checked;
         }
-
-
-
     }
 }

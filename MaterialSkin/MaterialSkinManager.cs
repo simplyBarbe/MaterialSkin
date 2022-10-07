@@ -35,7 +35,7 @@
         private MaterialSkinManager()
         {
             Theme = Themes.LIGHT;
-            ColorScheme = new ColorScheme(Primary.Indigo500, Primary.Indigo700, Primary.Indigo100, Accent.Pink200, TextShade.WHITE);
+            ColorScheme = new ColorScheme(Primary.Indigo500, Primary.Indigo700, Primary.Indigo100, Accent.Pink200, TextShade.WHITE, Primary.Green700,Primary.Cyan700, Primary.Yellow700, Primary.Red700);
 
             // Create and cache Roboto fonts
             // Thanks https://www.codeproject.com/Articles/42041/How-to-Use-a-Font-Without-Installing-it
